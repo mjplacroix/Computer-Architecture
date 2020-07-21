@@ -73,3 +73,6 @@ class CPU:
     def run(self, pc_address):
         """Run the CPU."""
         IR = PC[pc_address]
+
+        # Using ram_read(), read the bytes at PC+1 and PC+2 from RAM into variables operand_a and operand_b in case the instruction needs them.
+        operand_a, operand_b = self.ram_read(self.pc + 1), self.ram_read(self.pc + 2)

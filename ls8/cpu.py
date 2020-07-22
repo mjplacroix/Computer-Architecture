@@ -1,11 +1,11 @@
 """CPU functionality."""
 import sys
 
-HALT = 0b01
-LDI = 0b10000010
-PRN = 0b01000111
-NOP = 0b00000000
-MUL = 0b10100010
+# HALT = 0b01
+# LDI = 0b10000010
+# PRN = 0b01000111
+# NOP = 0b00000000
+# MUL = 0b10100010
 
 class CPU:
     """Main CPU class."""
@@ -17,6 +17,9 @@ class CPU:
         # self.reg = [R0, R1, R2, R3, R4, R5, R6, R7]
         self.reg = [0] * 8
         self.pc = 0
+        self.SP = 7
+        self.reg[self.SP] = 0xF4 
+
 
         # ## branch table 
         # self.branchtable = {}
@@ -150,6 +153,8 @@ class CPU:
         NOP = 0b00000000
         MUL = 0b10100010
         CMP = 0b10100111
+        PUSH = 0b01000101
+        POP = 0b01000110
 
         # Using ram_read(), read the bytes at PC+1 and PC+2 from RAM into variables operand_a and operand_b in case the instruction needs them.
         # operand_a, operand_b = self.ram_read(self.pc + 1), self.ram_read(self.pc + 2)
@@ -190,5 +195,25 @@ class CPU:
             elif ir == CMP:
                 self.pc += 1
                 self.alu('CMP', self.ram[self.pc], self.ram[self.pc +1])
+            elif ir == PUSH:
+                self.pc += 1
+                self.reg[self.SP] -= 1
+
+                # Copy the value in the given register to the address pointed to by SP.
+                value = self.reg[self.ram[self.pc]]
+                self.ram[self.reg[self.SP]] = value
+                
+                self.pc += 1
+            elif ir == POP:
+                self.pc += 1
+
+                # Copy the value from the address pointed to by SP to the given register.
+                value = self.ram[self.reg[self.SP]]
+                self.reg[self.ram[self.pc]] = value                
+                
+                # Increment SP
+                self.reg[self.SP] += 1
+                self.pc += 1
+
 
                 

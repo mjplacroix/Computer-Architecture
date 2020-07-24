@@ -8,7 +8,6 @@ class CPU:
         """Construct a new CPU."""
         
         self.ram = [0] * 256
-        # self.reg = [R0, R1, R2, R3, R4, R5, R6, R7]
         self.reg = [0] * 8
         self.pc = 0
         self.SP = 7
@@ -53,7 +52,6 @@ class CPU:
 
                 self.ram[address] = v
                 address += 1
-            # print(self.ram[:10])
 
         
     def ram_read(self, address):
@@ -69,39 +67,18 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
         elif op == "MUL":
-            # print(reg_a, reg_b)
-            # print(self.reg[reg_a], self.reg[reg_b])
             self.reg[reg_a] *= self.reg[reg_b]
         elif op == 'CMP':
-            # print(f'CMP: {self.reg[reg_a], self.reg[reg_b]}')
             if self.reg[reg_a] == self.reg[reg_b]:
-                # print('this_1')
                 # set the 7th index [E] to 1
                 self.FL[7] = 1
-                # # no shift - increment E by 1
-                # self.FL += 1
-                # print(f'CMP[7] -> {self.FL}')
             elif self.reg[reg_a] < self.reg[reg_b]:
-                # print('this_2')
                 # set the 5th index to 1
                 self.FL[5] = 1
-                # self.FL = self.FL >> 2
-                # # increment L in FLAG by 1
-                # self.FL = 1
-                # # shift FLAG left by 2
-                # self.FL = self.FL << 2
             else:
-                # print('this_3')
                 # set the 6th index [G] to 1
                 self.FL[6] = 1
-                # # shift FLAG right by 1
-                # self.FL = self.FL >> 1
-                # # increment G in FLAG by 1
-                # self.FL = 1
-                # # shift FLAG left by 1
-                # self.FL = self.FL << 1
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -128,7 +105,6 @@ class CPU:
     def run(self):
         """Run the CPU."""
         ir = self.ram[self.pc]
-        # print('1')
 
         HALT = 0b01
         LDI = 0b10000010
@@ -151,7 +127,9 @@ class CPU:
             elif ir == LDI:
                 operand_a, operand_b = self.ram_read(self.pc + 1), self.ram_read(self.pc + 2)
                 self.reg[operand_a] = operand_b
-                # print(self.reg, operand_b)
+
+                #watch code step by step
+                print(self.reg, operand_b)
                 self.pc += 3
             elif ir == PRN:
                 self.pc += 1
@@ -196,10 +174,6 @@ class CPU:
                 self.pc = new_address
             elif ir == JEQ:
                 # if E on FLAG is true
-                # # make a copy for manipulation then comparison
-                # copyFL = self.FL
-                # copyFL = copyFL << 7
-                # copyFL = copyFL >> 7
                 # if the 7th index is equal to 1
                 if self.FL[7] == 1:
                     # go to registar entry for next pc
@@ -208,17 +182,8 @@ class CPU:
                     self.pc += 2
             elif ir == JNE:
                 # if E on FLAG is false
-                # # make a copy for manipulation then comparison
-                # copyFL_2 = self.FL
-                # print(f'flag: {copyFL_2}')    # 0b00000000
-                # copyFL_2 = copyFL_2 << 19
-                # print(f'flag: {copyFL_2}')
-                # copyFL_2 = copyFL_2 >> 8
-                # print(f'flag: {copyFL_2}')
-                # if copyFL_2 == 0:
-                # print(f'FL-> {self.FL}')
+                # if the 7th index is equal to 0
                 if self.FL[7] == 0:
-                    # print(f'pc -> {self.pc}')
                     # go to registar entry for next pc
                     self.pc = self.reg[self.ram[self.pc + 1]]
                     # print(f'pc -> {self.pc}    ram -> {self.ram[self.pc]}')
